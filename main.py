@@ -104,7 +104,10 @@ class WeightScreen(Screen):
 		self.manager.current = 'main'
 
 	def update_label(self, spinner, value):
-		pass
+		options = [option for option in spinner.values if value != option]
+		labels = [self.weight_label1, self.weight_label2, self.weight_label3]
+		for i in range(len(options)):
+			labels[i].text = options[i]
 
 
 
