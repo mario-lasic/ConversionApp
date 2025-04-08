@@ -1,3 +1,5 @@
+from operator import indexOf
+
 from kivy.app import App
 from kivy.uix.boxlayout import BoxLayout
 from kivy.uix.screenmanager import ScreenManager, Screen
@@ -76,17 +78,17 @@ class WeightScreen(Screen):
 		# Row 3 - Labels for non-selected options
 		row_3 = BoxLayout(size_hint_y=2, orientation='horizontal')
 		col_1 = BoxLayout(size_hint_y=1, orientation='vertical', size_hint_x=1)
-		self.weight_label1 = Label(text="Result 1", size_hint=(1, 0.5), valign="top")
+		self.weight_label1 = Label(text="Result 1", size_hint=(1, 0.5), valign="top", font_size="20sp")
 		self.weight1 = Label(text="0", size_hint=(1, 1), valign="center")
 		col_1.add_widget(self.weight_label1)
 		col_1.add_widget(self.weight1)
 		col_2 = BoxLayout(size_hint_y=1, orientation='vertical', size_hint_x=1)
-		self.weight_label2 = Label(text="Result 1", size_hint=(1, 0.5), valign="top")
+		self.weight_label2 = Label(text="Result 1", size_hint=(1, 0.5), valign="top", font_size="20sp")
 		self.weight2 = Label(text="0", size_hint=(1, 1), valign="center")
 		col_2.add_widget(self.weight_label2)
 		col_2.add_widget(self.weight2)
 		col_3 = BoxLayout(size_hint_y=1, orientation='vertical', size_hint_x=1)
-		self.weight_label3 = Label(text="Result 1", size_hint=(1, 0.5), valign="top")
+		self.weight_label3 = Label(text="Result 1", size_hint=(1, 0.5), valign="top", font_size="20sp")
 		self.weight3 = Label(text="0", size_hint=(1, 1), valign="center")
 		col_3.add_widget(self.weight_label3)
 		col_3.add_widget(self.weight3)
@@ -97,8 +99,31 @@ class WeightScreen(Screen):
 		# Add the layout to the screen
 		self.add_widget(layout)
 
-	def convert_weight(self):
-		pass
+	def convert_weight(self, instance):
+		try:
+			weight = float(self.weight_input.text)
+		except ValueError:
+			return
+
+		conversions = {
+			"Kilograms": (1, 1000, 2.20462, 0.15747),
+			"Grams": (0.001, 1, 0.00220462, 0.00015747),
+			"Pounds": (0.453592, 453.592, 1, 0.0714286),
+			"Stones": (6.35029, 6350.29, 14, 1)
+		}
+
+		unit = self.spinner.text
+		all_options = self.spinner.values
+		options = [option for option in self.spinner.values if unit != option]
+		labels = [self.weight1, self.weight2, self.weight3]
+		for i, option in enumerate(options):
+			index = all_options.index(unit)
+			result = weight / conversions[option][index]
+			print(option)
+			print(conversions[option][index])
+
+			labels[i].text = f"{result:.2f}"
+
 
 	def switch_back(self):
 		self.manager.current = 'main'
@@ -108,7 +133,6 @@ class WeightScreen(Screen):
 		labels = [self.weight_label1, self.weight_label2, self.weight_label3]
 		for i in range(len(options)):
 			labels[i].text = options[i]
-
 
 
 class LengthScreen(Screen):
