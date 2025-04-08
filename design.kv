@@ -1,0 +1,56 @@
+# design.kv
+
+ScreenManager:
+    MainScreen:
+        name: "main"
+    WeightScreen:
+        name: "weight"
+    LengthScreen:
+        name: "length"
+    TemperatureScreen:
+        name: "temperature"
+
+<MainScreen>:
+    BoxLayout:
+        orientation: 'vertical'
+        padding: [50, 50, 50, 50]
+        spacing: 20
+        Button:
+            text: "Weight"
+            on_press: root.manager.current = "weight"
+        Button:
+            text: "Length"
+            on_press: root.manager.current = "length"
+        Button:
+            text: "Temperature"
+            on_press: root.manager.current = "temperature"
+
+<WeightScreen>:
+    GridLayout:
+        padding: [50, 50, 50, 50]
+        spacing: 20
+        Label:
+            text: "Weight Conversion"
+        Button:
+            text: "Back"
+            on_press: root.manager.current = "main"
+
+<LengthScreen>:
+    GridLayout:
+        padding: [50, 50, 50, 50]
+        spacing: 20
+        Label:
+            text: "Length Conversion"
+        Button:
+            text: "Back"
+            on_press: root.manager.current = "main"
+
+<TemperatureScreen>:
+    GridLayout:
+        padding: [50, 50, 50, 50]
+        spacing: 20
+        Label:
+            text: "Temperature Conversion"
+        Button:
+            text: "Back"
+            on_press: root.manager.current = "main"
