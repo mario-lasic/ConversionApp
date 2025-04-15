@@ -4,6 +4,7 @@ from kivy.uix.button import Button
 from kivy.uix.boxlayout import BoxLayout
 from weight_screen import WeightScreen
 from length_screen import LengthScreen
+from temperature_screen import  TemperatureScreen
 
 
 class MainScreen(Screen):
@@ -34,24 +35,6 @@ class MainScreen(Screen):
 
 	def change_screen(self, name):
 		self.manager.current = name
-
-
-class TemperatureScreen(Screen):
-	def __init__(self, **kwargs):
-		super().__init__(**kwargs)
-
-	def convert_temperature(self):
-		temp_input = self.ids.temp_input.text
-		result_label = self.ids.result_label
-		try:
-			temp_celsius = float(temp_input)
-			temp_fahrenheit = (temp_celsius * 9 / 5) + 32
-			result_label.text = f"{temp_celsius} °C = {temp_fahrenheit:.2f} °F"
-		except ValueError:
-			result_label.text = "Please enter a valid number for temperature."
-
-	def switch_back(self):
-		self.manager.current = 'main'
 
 
 # Main app class

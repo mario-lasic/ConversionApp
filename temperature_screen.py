@@ -5,7 +5,8 @@ from kivy.uix.textinput import TextInput
 from kivy.uix.spinner import Spinner
 from kivy.uix.boxlayout import BoxLayout
 
-class LengthScreen(Screen):
+
+class TemperatureScreen(Screen):
 	def __init__(self, **kwargs):
 		super().__init__(**kwargs)
 		# Create the main grid layout
@@ -22,12 +23,12 @@ class LengthScreen(Screen):
 
 		# Row 1 - TextInput and Spinner
 		row_1 = BoxLayout(size_hint_y=1, spacing=20)
-		self.length_input = TextInput(hint_text="Enter length", multiline=False, size_hint=(None, None), size_hint_x=2,
+		self.temperature_input = TextInput(hint_text="Enter temperature", multiline=False, size_hint=(None, None), size_hint_x=2,
 		                              input_filter='float', font_size='30sp')
-		self.spinner = Spinner(text="Length", values=("Centimeters", "Meters", "Inches", "Feet"),
+		self.spinner = Spinner(text="Length", values=("Celsius","Kelvin","Fahrenheit",),
 		                       size_hint=(None, None), size_hint_x=1)
 		self.spinner.bind(text=self.update_label)
-		row_1.add_widget(self.length_input)
+		row_1.add_widget(self.temperature_input)
 		row_1.add_widget(self.spinner)
 		layout.add_widget(row_1)
 
@@ -41,54 +42,53 @@ class LengthScreen(Screen):
 		# Row 3 - Labels for non-selected options
 		row_3 = BoxLayout(size_hint_y=2, orientation='horizontal')
 		col_1 = BoxLayout(size_hint_y=1, orientation='vertical', size_hint_x=1)
-		self.length1_label = Label(text="Result 1", size_hint=(1, 0.5), valign="top", font_size="20sp")
-		self.length1 = Label(text="0", size_hint=(1, 1), valign="center")
-		col_1.add_widget(self.length1_label)
-		col_1.add_widget(self.length1)
+		self.temperature1_label = Label(text="Result 1", size_hint=(1, 0.5), valign="top", font_size="20sp")
+		self.temperature1 = Label(text="0", size_hint=(1, 1), valign="center")
+		col_1.add_widget(self.temperature1_label)
+		col_1.add_widget(self.temperature1)
 		col_2 = BoxLayout(size_hint_y=1, orientation='vertical', size_hint_x=1)
-		self.length2_label = Label(text="Result 1", size_hint=(1, 0.5), valign="top", font_size="20sp")
-		self.length2 = Label(text="0", size_hint=(1, 1), valign="center")
-		col_2.add_widget(self.length2_label)
-		col_2.add_widget(self.length2)
-		col_3 = BoxLayout(size_hint_y=1, orientation='vertical', size_hint_x=1)
-		self.length3_label = Label(text="Result 1", size_hint=(1, 0.5), valign="top", font_size="20sp")
-		self.length3 = Label(text="0", size_hint=(1, 1), valign="center")
-		col_3.add_widget(self.length3_label)
-		col_3.add_widget(self.length3)
+		self.temperature2_label = Label(text="Result 1", size_hint=(1, 0.5), valign="top", font_size="20sp")
+		self.temperature2 = Label(text="0", size_hint=(1, 1), valign="center")
+		col_2.add_widget(self.temperature2_label)
+		col_2.add_widget(self.temperature2)
 		row_3.add_widget(col_1)
 		row_3.add_widget(col_2)
-		row_3.add_widget(col_3)
 		layout.add_widget(row_3)
 		# Add the layout to the screen
 		self.add_widget(layout)
 
 	def convert_length(self, instance):
 		try:
-			length = float(self.length_input.text)
+			temperature = float(self.temperature_input.text)
 		except ValueError:
 			return
 
 		conversions = {
-			"Centimeters": (1, 0.01, 0.393701, 0.0328084),
-			"Meters": (100, 1, 39.3701, 3.28084),
-			"Inches": (2.54, 0.0254, 1, 0.0833333),
-			"Feet": (30.48, 0.3048, 12, 1)
+			"Celsius": (1, lambda x: x + 273.15, lambda x: x * 9 / 5 + 32),
+			"Kelvin": (lambda x: x - 273.15, 1, lambda x: (x - 273.15) * 9 / 5 + 32),
+			"Fahrenheit": (lambda x: (x - 32) * 5 / 9, lambda x: (x - 32) * 5 / 9 + 273.15, 1)
 		}
 
 		unit = self.spinner.text
 		all_options = self.spinner.values
 		options = [option for option in self.spinner.values if unit != option]
-		labels = [self.length1, self.length2, self.length3]
+		labels = [self.temperature1, self.temperature2]
 		for i, option in enumerate(options):
-			index = all_options.index(unit)
-			result = length / conversions[option][index]
-			labels[i].text = f"{result:.2f}"
+			from_index = all_options.index(unit)
+			to_index = all_options.index(option)
 
+			conversion_function = conversions[unit][to_index]
+			if callable(conversion_function):
+				result = conversion_function(temperature)
+			else:
+				result = temperature * conversion_function
+
+			labels[i].text = f"{result:.2f}"
 	def switch_back(self, instance):
 		self.manager.current = 'main'
 
 	def update_label(self, spinner, value):
 		options = [option for option in spinner.values if value != option]
-		labels = [self.length1_label, self.length2_label, self.length3_label]
+		labels = [self.temperature1_label, self.temperature2_label]
 		for i in range(len(options)):
 			labels[i].text = options[i]
